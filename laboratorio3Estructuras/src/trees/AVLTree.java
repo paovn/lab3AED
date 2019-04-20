@@ -6,63 +6,32 @@ import java.util.List;
 
 public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
 
-    class Node<K extends Comparable<K>,V> extends BST<K,V>.Node<K,V>{
-        int balance;
-        int height;
 
-        Node(K key ,V value, Node<K,V> parent) {
-            super(key,value,parent);
-        }
-
-        Node<K, V> getLeft() {
-            return (Node<K, V>) left;
-        }
-
-        void setLeft(Node<K, V> left) {
-            this.left = left;
-        }
-
-        Node<K, V> getRight() {
-            return (Node<K, V>)right;
-        }
-
-        void setRight(Node<K, V> right) {
-            this.right = right;
-        }
-
-        Node<K, V> getParent() {
-            return (Node<K, V>)parent;
-        }
-
-        void setParent(Node<K, V> parent) {
-            this.parent = parent;
-        }
-    }
-
-    private Node<K,V> root;
+     private AVLNode<K,V> root = (AVLNode<K,V>) super.root;
 
     @Override
     public boolean insert(K key, V value) {
+        size++;
         if (root == null) {
-            root = new Node<K,V>(key,value, null);
+            root = new AVLNode<>(key, value, null);
             return true;
         }
 
-        Node<K,V> n = root;
+        AVLNode<K,V> n = root;
         while (true) {
             //if (n.key.equals(key))
             //   return false;
 
-            Node<K,V> parent = n;
+            AVLNode<K,V> parent = n;
 
-            boolean goLeft = n.key.compareTo(key)>0;
+            boolean goLeft = n.getKey().compareTo(key)>0;
             n = goLeft ? n.getLeft() : n.getRight();
 
             if (n == null) {
                 if (goLeft) {
-                    parent.setLeft(new Node<K,V>(key,value, parent));
+                    parent.setLeft(new AVLNode<>(key, value, parent));
                 } else {
-                    parent.setRight(new Node<K,V>(key,value, parent));
+                    parent.setRight(new AVLNode<>(key, value, parent));
                 }
                 rebalance(parent);
                 break;
@@ -71,12 +40,12 @@ public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
         return true;
     }
 
-    private void delete(Node<K,V> node) {
+    private void delete(AVLNode<K,V> node) {
         if (node.getLeft() == null && node.getRight() == null) {
             if (node.getParent() == null) {
                 root = null;
             } else {
-                Node<K,V> parent = node.getParent();
+                AVLNode<K,V> parent = node.getParent();
                 if (parent.getLeft() == node) {
                     parent.setLeft(null);
                 } else {
@@ -88,45 +57,47 @@ public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
         }
 
         if (node.getLeft() != null) {
-            Node<K,V> child = node.getLeft();
+            AVLNode<K,V> child = node.getLeft();
             while (child.getRight() != null) child = child.getRight();
-            node.key = child.key;
-            node.value = child.value;
+            node.setKey(child.getKey());
+            node.setValue(child.getValue());
             delete(child);
         } else {
-            Node<K,V> child = node.getRight();
+            AVLNode<K,V> child = node.getRight();
             while (child.getLeft() != null) child = child.getLeft();
-            node.key = child.key;
-            node.value = child.value;
+            node.setKey(child.getKey());
+            node.setValue(child.getValue());
             delete(child);
         }
     }
 
+    @Override
     public void delete(K delKey) {
         if (root == null)
             return;
-
-        Node<K,V> child = root;
+        size--;
+        AVLNode<K,V> child = root;
         while (child != null) {
-            Node<K,V> node = child;
-            child = delKey.compareTo(node.key) >= 0 ? node.getRight() : node.getLeft();
-            if (delKey == node.key) {
+            AVLNode<K,V> node = child;
+            child = delKey.compareTo(node.getKey()) >= 0 ? node.getRight() : node.getLeft();
+            if (delKey == node.getKey()) {
                 delete(node);
                 return;
             }
         }
+        size++;
     }
 
-    private void rebalance(Node<K,V> n) {
+    private void rebalance(AVLNode<K,V> n) {
         setBalance(n);
 
-        if (n.balance == -2) {
+        if (n.getBalance() == -2) {
             if (height(n.getLeft().getLeft()) >= height(n.getLeft().getRight()))
                 n = rotateRight(n);
             else
                 n = rotateLeftThenRight(n);
 
-        } else if (n.balance == 2) {
+        } else if (n.getBalance() == 2) {
             if (height(n.getRight().getRight()) >= height(n.getRight().getLeft()))
                 n = rotateLeft(n);
             else
@@ -140,9 +111,9 @@ public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
         }
     }
 
-    private Node<K,V> rotateLeft(Node<K,V> a) {
+    private AVLNode<K,V> rotateLeft(AVLNode<K,V> a) {
 
-        Node<K,V> b = a.getRight();
+        AVLNode<K,V> b = a.getRight();
         b.setParent(a.getParent());
 
         a.setRight(b.getLeft());
@@ -166,9 +137,9 @@ public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
         return b;
     }
 
-    private Node<K,V> rotateRight(Node<K,V> a) {
+    private AVLNode<K,V> rotateRight(AVLNode<K,V> a) {
 
-        Node<K,V> b = a.getLeft();
+        AVLNode<K,V> b = a.getLeft();
         b.setParent(a.getParent());
 
         a.setLeft(b.getRight());
@@ -192,54 +163,28 @@ public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
         return b;
     }
 
-    private Node<K,V> rotateLeftThenRight(Node<K,V> n) {
+    private AVLNode<K,V> rotateLeftThenRight(AVLNode<K,V> n) {
         n.setLeft(rotateLeft(n.getLeft()));
         return rotateRight(n);
     }
 
-    private Node<K,V> rotateRightThenLeft(Node<K,V> n) {
+    private AVLNode<K,V> rotateRightThenLeft(AVLNode<K,V> n) {
         n.setRight(rotateRight(n.getRight()));
         return rotateLeft(n);
     }
 
-    private int height(Node<K,V> n) {
+    private int height(AVLNode<K,V> n) {
         if (n == null)
             return -1;
-        return n.height;
+        return n.getHeight();
     }
 
-    private void setBalance(Node... nodes) {
-        for (Node<K,V> n : nodes) {
+    @SafeVarargs
+    private final void setBalance(AVLNode<K, V>... nodes) {
+        for (AVLNode<K,V> n : nodes) {
             reheight(n);
-            n.balance = height(n.getRight()) - height(n.getLeft());
+            n.setBalance(height(n.getRight()) - height(n.getLeft()));
         }
-    }
-
-    public void printBalance() {
-        printBalance(root);
-    }
-
-    private void printBalance(Node<K,V> n) {
-        if (n != null) {
-            printBalance(n.getLeft());
-            System.out.printf("%s ", n.balance);
-            printBalance(n.getRight());
-        }
-    }
-
-    public List<K> keysInOrder(){
-        if (root != null) return keysInOrder(root,new ArrayList<>());
-        return null;
-    }
-
-    public List<V> valuesInOrder(){
-        if (root != null) return valuesInOrder(root,new ArrayList<>());
-        return null;
-    }
-
-    public List<Box<K,V>> pairOfElementsInOrder(){
-        if (root != null) return pairOfElementsInOrder(root,new ArrayList<>());
-        return null;
     }
 
     public V searchElement(K key){
@@ -252,36 +197,34 @@ public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
         return root == null;
     }
 
-    private List<Box<K, V>> pairOfElementsInOrder(Node<K, V> root, List<Box<K, V>> list) {
-        if (root.getLeft() != null) pairOfElementsInOrder(root.getLeft(),list);
-        list.add(root.getBox());
-        if (root.getRight() != null) pairOfElementsInOrder(root.getRight(),list);
-        return list;
-    }
-
-    private List<K> keysInOrder(Node<K,V> root, List<K> list) {
-            if (root.getLeft() != null) keysInOrder(root.getLeft(),list);
-            list.add(root.key);
-            if (root.getRight() != null) keysInOrder(root.getRight(),list);
-            return list;
-    }
-
-    private List<V> valuesInOrder(Node<K,V> root, List<V> list) {
-        if (root.getLeft() != null) valuesInOrder(root.getLeft(),list);
-        list.add(root.value);
-        if (root.getRight() != null) valuesInOrder(root.getRight(),list);
-        return list;
-    }
-
-    private void reheight(Node<K,V> node) {
+    private void reheight(AVLNode<K,V> node) {
         if (node != null) {
-            node.height = 1 + Math.max(height(node.getLeft()), height(node.getRight()));
+            node.setHeight(1 + Math.max(height(node.getLeft()), height(node.getRight())));
         }
+    }
+
+    @Override
+    public List<K> keysInOrder(){
+        if (root != null) return keysInOrder(root,new ArrayList<>());
+        return null;
+    }
+
+    @Override
+    public List<V> valuesInOrder(){
+        if (root != null) return valuesInOrder(root,new ArrayList<>());
+        return null;
+    }
+
+    @Override
+    public List<Box<K,V>> pairOfElementsInOrder(){
+        if (root != null) return pairOfElementsInOrder(root,new ArrayList<>());
+        return null;
     }
 
 
     public static void main(String[] args) {
-        AVLTree<Integer, Integer> tree = new AVLTree<>();
+        BinarySearchTree<Integer, Integer> tree = new RedBlackTree<>();
+        //BinarySearchTree<Integer, Integer> tree = new AVLTree<>();
 
         System.out.println("Inserting values 1 to 64");
         for (int i = 0; i <= 64; i++) {
@@ -289,13 +232,16 @@ public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
         }
         System.out.println(tree.keysInOrder().size());
         System.out.print("Printing balance: ");
-        tree.printBalance();
-        tree.keysInOrder().forEach(System.out::println);
+        System.out.println();
+        for (Integer integer : tree.keysInOrder()) System.out.print(integer + " ");
         System.out.println("\n"+tree.searchElement(8));
         tree.delete(8);
         System.out.println("\n"+tree.searchElement(8));
         tree.delete(8);
         System.out.println("\n"+tree.searchElement(8));
+        System.out.println(tree.size());
+        tree.delete(9);
+        System.out.println(tree.size());
 
     }
 }
