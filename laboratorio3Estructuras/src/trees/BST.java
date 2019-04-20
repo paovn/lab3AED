@@ -1,44 +1,16 @@
 package trees;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BST<K extends Comparable<K>,V> implements BinarySearchTree<K,V>{
 
-    class Node<K extends Comparable<K>,V> {
-        K key;
-        V value;
-        Node<K,V> left;
-        Node<K,V> right;
-        Node<K,V> parent;
-
-        Node(K key ,V value, Node<K,V> parent) {
-            this.value = value;
-            this.key = key;
-            this.parent = parent;
-        }
-
-        Box<K,V> getBox(){return new Box<>(this);}
-    }
-
-    class Box<K extends Comparable<K>,V>{
-        private K key;
-        private V value;
-        private Box(Node<K,V>node){
-            key = node.key;
-            value = node.value;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
-    }
-
     Node<K,V> root;
+    int size;
 
     @Override
     public boolean insert(K key, V value) {
+        size++;
         if (!isEmpty())
         {
             return insert(key, value, root);
@@ -51,12 +23,12 @@ public class BST<K extends Comparable<K>,V> implements BinarySearchTree<K,V>{
     }
 
     private boolean insert(K key, V value, Node<K,V> root) {
-        if (key.compareTo(root.key) > 0){
-            if (root.right == null) root.right = new Node<>(key,value,root);
-            else insert(key,value,root.right);
+        if (key.compareTo(root.getKey()) > 0){
+            if (root.getRight() == null) root.setRight(new Node<>(key,value,root));
+            else insert(key,value, root.getRight());
         }else {
-            if (root.left == null) root.left = new Node<>(key,value,root);
-            else insert(key,value,root.left);
+            if (root.getLeft() == null) root.setLeft(new Node<>(key,value,root));
+            else insert(key,value, root.getLeft());
         }
         return true;
     }
@@ -66,43 +38,45 @@ public class BST<K extends Comparable<K>,V> implements BinarySearchTree<K,V>{
         if (root == null)
             return;
 
+        size--;
         Node<K,V> child = root;
         while (child != null) {
             Node<K,V> node = child;
-            child = delKey.compareTo(node.key) >= 0 ? node.right : node.left;
-            if (delKey == node.key) {
+            child = delKey.compareTo(node.getKey()) >= 0 ? node.getRight() : node.getLeft();
+            if (delKey == node.getKey()) {
                 delete(node);
                 return;
             }
         }
+        size++;
     }
 
     private void delete(Node<K,V> node) {
-        if (node.left == null && node.right == null) {
-            if (node.parent == null) {
+        if (node.getLeft() == null && node.getRight() == null) {
+            if (node.getParent() == null) {
                 root = null;
             } else {
-                Node<K,V> parent = node.parent;
-                if (parent.left == node) {
-                    parent.left = null;
+                Node<K,V> parent = node.getParent();
+                if (parent.getLeft() == node) {
+                    parent.setLeft(null);
                 } else {
-                    parent.right = null;
+                    parent.setRight(null);
                 }
             }
             return;
         }
 
-        if (node.left != null) {
-            Node<K,V> child = node.left;
-            while (child.right != null) child = child.right;
-            node.key = child.key;
-            node.value = child.value;
+        if (node.getLeft() != null) {
+            Node<K,V> child = node.getLeft();
+            while (child.getRight() != null) child = child.getRight();
+            node.setKey(child.getKey());
+            node.setValue(child.getValue());
             delete(child);
         } else {
-            Node<K,V> child = node.right;
-            while (child.left != null) child = child.left;
-            node.key = child.key;
-            node.value = child.value;
+            Node<K,V> child = node.getRight();
+            while (child.getLeft() != null) child = child.getLeft();
+            node.setKey(child.getKey());
+            node.setValue(child.getValue());
             delete(child);
         }
     }
@@ -114,12 +88,12 @@ public class BST<K extends Comparable<K>,V> implements BinarySearchTree<K,V>{
     }
 
     V searchElement(K key, Node<K,V> root) {
-        if (key.equals(root.key)){
-            return root.value;
-        }else if (root.key.compareTo(key)>0 && root.left != null){
-            return searchElement(key,root.left);
-        }else if (root.key.compareTo(key)<0 && root.right != null){
-            return searchElement(key,root.right);
+        if (key.equals(root.getKey())){
+            return root.getValue();
+        }else if (root.getKey().compareTo(key)>0 && root.getLeft() != null){
+            return searchElement(key, root.getLeft());
+        }else if (root.getKey().compareTo(key)<0 && root.getRight() != null){
+            return searchElement(key, root.getRight());
         }
         return null;
     }
@@ -134,5 +108,46 @@ public class BST<K extends Comparable<K>,V> implements BinarySearchTree<K,V>{
     public boolean exists(K key) {
         return searchElement(key) != null;
     }
-}
 
+    @Override
+    public int size() {
+        return size;
+    }
+
+
+    public List<K> keysInOrder(){
+        if (root != null) return keysInOrder(root,new ArrayList<>());
+        return null;
+    }
+
+    public List<V> valuesInOrder(){
+        if (root != null) return valuesInOrder(root,new ArrayList<>());
+        return null;
+    }
+
+    public List<Box<K,V>> pairOfElementsInOrder(){
+        if (root != null) return pairOfElementsInOrder(root,new ArrayList<>());
+        return null;
+    }
+
+    List<Box<K, V>> pairOfElementsInOrder(Node<K, V> root, List<Box<K, V>> list) {
+        if (root.getLeft() != null) pairOfElementsInOrder(root.getLeft(),list);
+        list.add(root.getBox());
+        if (root.getRight() != null) pairOfElementsInOrder(root.getRight(),list);
+        return list;
+    }
+
+    List<K> keysInOrder(Node<K, V> root, List<K> list) {
+        if (root.getLeft() != null) keysInOrder(root.getLeft(),list);
+        list.add(root.getKey());
+        if (root.getRight() != null) keysInOrder(root.getRight(),list);
+        return list;
+    }
+
+    List<V> valuesInOrder(Node<K, V> root, List<V> list) {
+        if (root.getLeft() != null) valuesInOrder(root.getLeft(),list);
+        list.add(root.getValue());
+        if (root.getRight() != null) valuesInOrder(root.getRight(),list);
+        return list;
+    }
+}

@@ -34,10 +34,29 @@ public interface BinarySearchTree<K extends Comparable<K>,V> {
 
     /**
      * check if the value whit the key key is in the Tree </br>
-     * @param key
-     * @return
+     * @param key - the key of the elemnt that the user want to search
+     * @return - a boolean that reprexent the existence of the element
      */
     boolean exists(K key);
 
-}
+    /**
+     * count the elements in the tree
+     * @return - the count of elements int the tree
+     */
+    int size();
 
+    /**
+     * make a list with the keys in the tree in order
+     * @return - a list ok=f keys
+     */
+    List<K> keysInOrder();
+
+    /**
+     * make a list whit the values in the tree in the key's order
+     * @return
+     */
+    List<V> valuesInOrder();
+
+    List<Box<K,V>> pairOfElementsInOrder();
+
+}
