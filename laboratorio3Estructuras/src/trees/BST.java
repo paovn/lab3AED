@@ -43,7 +43,7 @@ public class BST<K extends Comparable<K>,V> implements BinarySearchTree<K,V>{
         while (child != null) {
             Node<K,V> node = child;
             child = delKey.compareTo(node.getKey()) >= 0 ? node.getRight() : node.getLeft();
-            if (delKey == node.getKey()) {
+            if (delKey.equals(node.getKey())) {
                 delete(node);
                 return;
             }
