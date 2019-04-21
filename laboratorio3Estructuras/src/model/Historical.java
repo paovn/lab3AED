@@ -45,4 +45,3 @@ public class Historical implements Comparable<Historical>{
         }
     }
 }
-
