@@ -80,7 +80,7 @@ public class AVLTree<K extends Comparable<K>,V> extends BST<K,V>{
         while (child != null) {
             AVLNode<K,V> node = child;
             child = delKey.compareTo(node.getKey()) >= 0 ? node.getRight() : node.getLeft();
-            if (delKey == node.getKey()) {
+            if (delKey.equals(node.getKey())) {
                 delete(node);
                 return;
             }
