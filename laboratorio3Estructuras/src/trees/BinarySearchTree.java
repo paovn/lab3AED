@@ -33,9 +33,9 @@ public interface BinarySearchTree<K extends Comparable<K>,V> {
     boolean isEmpty();
 
     /**
-     * check if the value whit the key key is in the Tree </br>
-     * @param key - the key of the elemnt that the user want to search
-     * @return - a boolean that reprexent the existence of the element
+     * check if the value with the key key is in the Tree </br>
+     * @param key - the key of the element that the user want to search
+     * @return - a boolean that represent the existence of the element
      */
     boolean exists(K key);
 
@@ -52,7 +52,7 @@ public interface BinarySearchTree<K extends Comparable<K>,V> {
     List<K> keysInOrder();
 
     /**
-     * make a list whit the values in the tree in the key's order
+     * make a list with the values in the tree in the key's order
      * @return
      */
     List<V> valuesInOrder();
