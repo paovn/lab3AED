@@ -3,6 +3,8 @@ package model;
 import trees.AVLTree;
 
 import java.io.*;
+import java.sql.Date;
+import java.util.List;
 
 public class BVC {
 
@@ -48,5 +50,14 @@ public class BVC {
             e.printStackTrace();
         }
     }
+    
+    public Ibehavior[] OvercomeAmount(Date dateStart, Date dateEnd, double amount) {
+    	Ibehavior[] array= new Ibehavior[3];
+			
+    	return array;
+    }
+	public void getDatasToIncreaseDependendedTime(Date dateStart, Date dateEnd) {
+		
+	}
 
 }
