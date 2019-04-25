@@ -43,6 +43,9 @@ class BinarySearchTreeTest {
             }
         }
         tree.keysInOrder().forEach(s -> assertFalse(removeKeys.contains(s)));
+//        for( String s:tree.keysInOrder() ) {
+//        	assertFalse(removeKeys.contains(s));
+//        }
         assertEquals(tree.size(), numOfAdditions -numOfDeletions);
     }
 

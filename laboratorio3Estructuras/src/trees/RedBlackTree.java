@@ -3,7 +3,6 @@ package trees;
 import java.util.ArrayList;
 import java.util.List;
 
-// Class Definitions
 public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
 
     // Root initialized to nil.
@@ -16,16 +15,10 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         root.setParent(getNil());
     }
 
-    // @param: x, The node which the lefRotate is to be performed on.
-    // Performs a leftRotate around x.
     private void leftRotate(RedBlackNode<K,V> x){
 
-        // Call leftRotateFixup() which updates the numLeft
-        // and numRight values.
         leftRotateFixup(x);
 
-        // Perform the left rotate as described in the algorithm
-        // in the course text.
         RedBlackNode<K,V> y;
         y = x.getRight();
         x.setRight(y.getLeft());
@@ -52,9 +45,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         x.setParent(y);
     }// end leftRotate(RedBlackNode x)
 
-
-    // @param: x, The node which the leftRotate is to be performed on.
-    // Updates the numLeft & numRight values affected by leftRotate.
     private void leftRotateFixup(RedBlackNode x){
 
         // Case 1: Only x, x.right and x.right.right always are not nil.
@@ -87,11 +77,8 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
                     x.getRight().getLeft().getNumLeft() + x.getRight().getLeft().getNumRight());
         }
 
-    }// end leftRotateFixup(RedBlackNode x)
+    }
 
-
-    // @param: x, The node which the rightRotate is to be performed on.
-    // Updates the numLeft and numRight values affected by the Rotate.
     private void rightRotate(RedBlackNode<K,V> y){
 
         // Call rightRotateFixup to adjust numRight and numLeft values
@@ -121,11 +108,8 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
 
         y.setParent(x);
 
-    }// end rightRotate(RedBlackNode y)
+    }
 
-
-    // @param: y, the node around which the righRotate is to be performed.
-    // Updates the numLeft and numRight values affected by the rotate
     private void rightRotateFixup(RedBlackNode y){
 
         // Case 1: Only y, y.left and y.left.left exists.
@@ -160,7 +144,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
                     y.getLeft().getRight().getNumRight() + y.getLeft().getRight().getNumLeft());
         }
 
-    }// end rightRotateFixup(RedBlackNode y)
+    }
 
     @Override
     public boolean insert(K key,V value) {
@@ -168,17 +152,13 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         return true;
     }
 
-    // @param: z, the node to be inserted into the Tree rooted at root
-    // Inserts z into the appropriate position in the RedBlackTree while
-    // updating numLeft and numRight values.
     private void insert(RedBlackNode<K,V> z) {
 
         // Create a reference to root & initialize a node to nil
         RedBlackNode<K,V> y = getNil();
         RedBlackNode<K,V> x = root;
 
-        // While we haven't reached a the end of the tree keep
-        // tryint to figure out where z should go
+        // While we haven't reached a the end of the tree keep. Tryint to figure out where z should go
         while (!isNil(x)){
             y = x;
 
@@ -201,16 +181,13 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         // y will hold z's parent
         z.setParent(y);
 
-        // Depending on the value of y.key, put z as the left or
-        // right child of y
         if (isNil(y))
             root = z;
         else if (z.getKey().compareTo(y.getKey()) < 0)
             y.setLeft(z);
         else
             y.setRight(z);
-
-        // Initialize z's children to nil and z's color to red
+        
         z.setLeft(getNil());
         z.setRight(getNil());
         z.setColor(RedBlackNode.RED);
@@ -220,11 +197,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
 
     }// end insert(RedBlackNode z)
 
-
-    // @param: z, the node which was inserted and may have caused a violation
-    // of the RedBlackTree properties
-    // Fixes up the violation of the RedBlackTree properties that may have
-    // been caused during insert(z)
     private void insertFixup(RedBlackNode<K,V> z){
 
         RedBlackNode<K,V> y = getNil();
@@ -295,8 +267,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
 
     }// end insertFixup(RedBlackNode z)
 
-    // @param: node, a RedBlackNode
-    // @param: node, the node with the smallest key rooted at node
+   
     private RedBlackNode<K,V> treeMinimum(RedBlackNode<K, V> node){
 
         // while there is a smaller key, keep going left
@@ -305,11 +276,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         return node;
     }// end treeMinimum(RedBlackNode node)
 
-
-
-    // @param: x, a RedBlackNode whose successor we must find
-    // @return: return's the node the with the next largest key
-    // from x.key
     private RedBlackNode<K,V> treeSuccessor(RedBlackNode<K, V> x){
 
         // if x.left is not nil, call treeMinimum(x.right) and
@@ -329,9 +295,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         return y;
     }// end treeMinimum(RedBlackNode x)
 
-
-    // @param: z, the RedBlackNode which is to be removed from the the tree
-    // Remove's z from the RedBlackTree rooted at root
     private void remove(RedBlackNode<K, V> v){
 
         RedBlackNode<K,V> z = search(v.getKey());
@@ -373,19 +336,12 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
             z.setKey(y.getKey());
         }
 
-        // Update the numLeft and numRight numbers which might need
-        // updating due to the deletion of z.key.
         fixNodeData(x,y);
 
-        // If y's color is black, it is a violation of the
-        // RedBlackTree properties so call removeFixup()
         if (y.getColor() == RedBlackNode.BLACK)
             removeFixup(x);
     }// end remove(RedBlackNode z)
 
-
-    // @param: y, the RedBlackNode which was actually deleted from the tree
-    // @param: key, the value of the key that used to be in y
     private void fixNodeData(RedBlackNode<K,V> x, RedBlackNode<K,V> y){
 
         // Initialize two variables which will help us traverse the tree
@@ -409,34 +365,23 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
 
         // while we haven't reached the root
         while (!isNil(current)){
-            // if the node we deleted has a different key than
-            // the current node
+     
             if (y.getKey() != current.getKey()) {
 
-                // if the node we deleted is greater than
-                // current.key then decrement current.numRight
                 if (y.getKey().compareTo(current.getKey()) > 0)
                     current.setNumRight(current.getNumRight() - 1);
 
-                // if the node we deleted is less than
-                // current.key thendecrement current.numLeft
                 if (y.getKey().compareTo(current.getKey()) < 0)
                     current.setNumLeft(current.getNumLeft() - 1);
             }
 
-            // if the node we deleted has the same key as the
-            // current node we are checking
             else{
-                // the cases where the current node has any nil
-                // children and update appropriately
+ 
                 if (isNil(current.getLeft()))
                     current.setNumLeft(current.getNumLeft() - 1);
                 else if (isNil(current.getRight()))
                     current.setNumRight(current.getNumRight() - 1);
 
-                    // the cases where current has two children and
-                    // we must determine whether track is it's left
-                    // or right child and update appropriately
                 else if (track == current.getRight())
                     current.setNumRight(current.getNumRight() - 1);
                 else if (track == current.getLeft())
@@ -452,9 +397,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
     }//end fixNodeData()
 
 
-    // @param: x, the child of the deleted node from remove(RedBlackNode v)
-    // Restores the Red Black properties that may have been violated during
-    // the removal of a node in remove(RedBlackNode v)
     private void removeFixup(RedBlackNode<K,V> x){
 
         RedBlackNode<K,V> w;
@@ -538,10 +480,8 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
                     x = root;
                 }
             }
-        }// end while
+        }
 
-        // set x to black to ensure there is no violation of
-        // RedBlack tree Properties
         x.setColor(RedBlackNode.BLACK);
     }
 
@@ -551,7 +491,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         // Initialize a pointer to the root to traverse the tree
         RedBlackNode<K,V> current = root;
 
-        // While we haven't reached the end of the tree
         while (!isNil(current)){
 
             // If we have found a node with a key equal to key
@@ -575,55 +514,32 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
 
     }// end search(int key)
 
-    // @param: key, any Comparable object
-    // @return: return's the number of elements greater than key
     public int numGreater(K key){
 
-        // Call findNumGreater(root, key) which will return the number
-        // of nodes whose key is greater than key
         return findNumGreater(root,key);
 
     }// end numGreater(int key)
 
-
-    // @param: key, any Comparable object
-    // @return: return's teh number of elements smaller than key
     public int numSmaller(K key){
-
-        // Call findNumSmaller(root,key) which will return
-        // the number of nodes whose key is greater than key
         return findNumSmaller(root,key);
 
     }// end numSmaller(int key)
 
 
-    // @param: node, the root of the tree, the key who we must
-    // compare other node key's to.
-    // @return: the number of nodes greater than key.
     public int findNumGreater(RedBlackNode<K,V> node, K key){
 
         // Base Case: if node is nil, return 0
         if (isNil(node))
             return 0;
-            // If key is less than node.key, all elements right of node are
-            // greater than key, add this to our total and look to the left
         else if (key.compareTo(node.getKey()) < 0)
             return 1+ node.getNumRight() + findNumGreater(node.getLeft(),key);
 
-            // If key is greater than node.key, then look to the right as
-            // all elements to the left of node are smaller than key
         else
             return findNumGreater(node.getRight(),key);
 
     }// end findNumGreater(RedBlackNode, int key)
 
-    /**
-     * Returns sorted list of keys greater than key.  Size of list
-     * will not exceed maxReturned
-     * @param key Key to search for
-     * @param maxReturned Maximum number of results to return
-     * @return List of keys greater than key.  List may not exceed maxReturned
-     */
+  
     public List<K> getGreaterThan(K key, Integer maxReturned) {
         List<K> list = new ArrayList<K>();
         getGreaterThan(root, key, list);
@@ -644,9 +560,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         }
     }
 
-    // @param: node, the root of the tree, the key who we must compare other
-    // node key's to.
-    // @return: the number of nodes smaller than key.
     public int findNumSmaller(RedBlackNode<K,V> node, K key){
 
         // Base Case: if node is nil, return 0
@@ -657,9 +570,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         else if (key.compareTo(node.getKey()) <= 0)
             return findNumSmaller(node.getLeft(),key);
 
-            // If key is larger than node.key, all elements to the left of
-            // node are smaller than key, add this to our total and look
-            // to the right.
         else
             return 1+ node.getNumLeft() + findNumSmaller(node.getRight(),key);
 
@@ -688,8 +598,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BST<K,V>{
         return search(key) != null;
     }
 
-    // @param: node, the RedBlackNode we must check to see whether it's nil
-    // @return: return's true of node is nil and false otherwise
     private boolean isNil(RedBlackNode node){
 
         // return appropriate value
